@@ -2,59 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Experiments</title>
+  <title>Welcome to Experiments</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen py-8 px-4">
   <div class="max-w-2xl mx-auto bg-white bg-opacity-90 rounded-2xl shadow-xl p-8">
-    <h1 class="text-3xl font-bold text-purple-700 mb-6 text-center">GH FileBrowser v2: <span class="text-blue-700">SubhrajitSain/experiments</span></h1>
-    <div id="browser" class="mt-4"></div>
+    <h1 class="text-3xl font-bold text-purple-700 mb-6 text-center">Welcome to ANW's Experimentation Site</h1>
+    <p class="text-lg text-gray-700 text-center">
+      This is a simple introductory page for the <b>SubhrajitSain/experiments</b> repository.<br>
+      Here, you’ll find various experiments and demos.
+    </p>
   </div>
-  <script>
-    const owner = 'SubhrajitSain';
-    const repo = 'experiments';
-
-    async function fetchContents(path = '') {
-      const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
-      const res = await fetch(api);
-      if (!res.ok) throw new Error('Failed to fetch contents');
-      return res.json();
-    }
-
-    function createList(items, path = '') {
-      const ul = document.createElement('ul');
-      ul.className = "space-y-1 ml-4";
-      items.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
-      items.forEach(item => {
-        const li = document.createElement('li');
-        if (item.type === 'dir') {
-          li.innerHTML = `<span class="folder cursor-pointer font-semibold text-blue-600 hover:underline transition">${item.name}/</span>`;
-          li.querySelector('.folder').onclick = async () => {
-            li.innerHTML = `<span class="italic text-gray-400">Loading...</span>`;
-            const children = await fetchContents(item.path);
-            li.innerHTML = `<span class="folder cursor-pointer font-semibold text-blue-600 hover:underline transition">${item.name}/</span>`;
-            li.appendChild(createList(children, item.path));
-          };
-        } else {
-          li.innerHTML = `<a class="file text-gray-700 hover:text-pink-600 font-mono transition" href="${item.html_url}" target="_blank">${item.name}</a>`;
-        }
-        ul.appendChild(li);
-      });
-      return ul;
-    }
-
-    async function loadBrowser() {
-      try {
-        const contents = await fetchContents();
-        const browser = document.getElementById('browser');
-        browser.innerHTML = '';
-        browser.appendChild(createList(contents));
-      } catch (e) {
-        document.getElementById('browser').innerHTML = '<span class="text-red-500">Error loading files.</span>';
-      }
-    }
-
-    loadBrowser();
-  </script>
 </body>
 </html>
