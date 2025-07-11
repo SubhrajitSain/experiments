@@ -1,2 +1,2 @@
-# experiments
-ANW's experimentation site
+# Experiments
+ANW's experimentation site.
