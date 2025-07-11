@@ -1,1 +1,64 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Experiment File Browser</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    ul { list-style-type: none; padding-left: 1em; }
+    li { margin: 0.2em 0; }
+    .folder { font-weight: bold; cursor: pointer; color: #0074d9; }
+    .file { color: #111; }
+  </style>
+</head>
+<body>
+  <h1>File Browser: SubhrajitSain/experiments</h1>
+  <div id="browser"></div>
+  <script>
+    const owner = 'SubhrajitSain';
+    const repo = 'experiments';
+
+    async function fetchContents(path = '') {
+      const api = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+      const res = await fetch(api);
+      if (!res.ok) throw new Error('Failed to fetch contents');
+      return res.json();
+    }
+
+    function createList(items, path = '') {
+      const ul = document.createElement('ul');
+      items.sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
+      items.forEach(item => {
+        const li = document.createElement('li');
+        if (item.type === 'dir') {
+          li.innerHTML = `<span class="folder">${item.name}/</span>`;
+          li.querySelector('.folder').onclick = async () => {
+            li.innerHTML = `<span>Loading...</span>`;
+            const children = await fetchContents(item.path);
+            li.innerHTML = `<span class="folder">${item.name}/</span>`;
+            li.appendChild(createList(children, item.path));
+          };
+        } else {
+          li.innerHTML = `<a class="file" href="${item.html_url}" target="_blank">${item.name}</a>`;
+        }
+        ul.appendChild(li);
+      });
+      return ul;
+    }
+
+    async function loadBrowser() {
+      try {
+        const contents = await fetchContents();
+        const browser = document.getElementById('browser');
+        browser.innerHTML = '';
+        browser.appendChild(createList(contents));
+      } catch (e) {
+        document.getElementById('browser').textContent = 'Error loading files.';
+      }
+    }
+
+    loadBrowser();
+  </script>
+</body>
+</html>
